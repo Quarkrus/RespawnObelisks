@@ -47,6 +47,9 @@ public class SecondarySpawnPointConfig {
             UNLESS_OBELISK: Players can only choose if their respawn point is not an obelisk.
             """;
 
+    @Comment("Whether attempting to set your spawn point when you are unable to overrides an existing spawn point.")
+    public boolean forceSpawnSetting = false;
+
     @Comment("When players are allowed to choose to spawn at a secondary respawn point.\n" + spawnModeComment)
     public PointSpawnMode secondarySpawnMode = PointSpawnMode.NEVER;
 

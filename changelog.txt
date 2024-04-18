@@ -1,4 +1,2 @@
-# 2.5-b
-- added respawn obelisks to carryon blacklist
-- added new spawn mode options
-- reworked item keeping
+# 2.5-c
+- added option to override secondary respawn points

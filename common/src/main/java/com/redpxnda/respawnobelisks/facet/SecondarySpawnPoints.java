@@ -17,6 +17,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -135,9 +136,11 @@ public class SecondarySpawnPoints implements EntityFacet<NbtCompound> {
         return 0;
     }
 
-    public boolean blockAdditionAllowed(Block block, MinecraftServer server) {
+    public boolean blockAdditionAllowed(ServerPlayerEntity player, Block block, MinecraftServer server) {
         int overallTotal = RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.overallMaxPoints;
-        if (overallTotal != -1 && points.size() >= overallTotal) return false;
+        boolean force = RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.forceSpawnSetting;
+        boolean surpassesOverall = overallTotal != -1 && points.size() >= overallTotal;
+        if (!force && surpassesOverall) return false;
 
         TaggableBlock targetType = null;
         int targetAmount = -1;
@@ -155,12 +158,22 @@ public class SecondarySpawnPoints implements EntityFacet<NbtCompound> {
 
         if (targetAmount == -1) return true;
 
+        SpawnPoint firstMatch = null;
         int collectedAmount = 0;
         for (SpawnPoint point : points) {
             World world = server.getWorld(point.dimension());
-            if (world != null && targetType.matches(world.getBlockState(point.pos()).getBlock())) collectedAmount++;
+            if (world != null && targetType.matches(world.getBlockState(point.pos()).getBlock())) {
+                collectedAmount++;
+                if (firstMatch == null) firstMatch = point;
+            }
         }
 
+        boolean result = collectedAmount < targetAmount;
+        if (force && !result && firstMatch != null) {
+            points.remove(firstMatch);
+            player.sendMessage(Text.translatable("block.respawnobelisks.override_spawn"));
+            collectedAmount--;
+        }
         return collectedAmount < targetAmount;
     }
 

@@ -90,13 +90,18 @@ public abstract class ServerPlayerMixin {
             SecondarySpawnPoints facet = SecondarySpawnPoints.KEY.get(player);
             if (facet == null) return;
             SpawnPoint point = new SpawnPoint(dimension, pos, angle, forced);
-            if (pos == null) facet.removeLatestPoint();
-            else if (facet.blockAdditionAllowed(getServerWorld().getBlockState(pos).getBlock(), player.getServer())) {
-                if (RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.enableBlockPriorities && facet.points.contains(point)) {
-                    ci.cancel();
-                    return;
-                }
 
+            if (pos == null) {
+                facet.removeLatestPoint();
+                return;
+            }
+
+            if (facet.points.contains(point)) {
+                if (RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.enableBlockPriorities)
+                    ci.cancel();
+                else
+                    facet.addPoint(point);
+            } else if (facet.blockAdditionAllowed(player, getServerWorld().getBlockState(pos).getBlock(), player.getServer())) {
                 facet.addPoint(point);
                 if (RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.enableBlockPriorities) facet.sortByPrio(player.getServer());
             } else if (!facet.points.contains(point)) {
