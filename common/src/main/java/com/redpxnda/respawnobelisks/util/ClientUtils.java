@@ -1,6 +1,7 @@
 package com.redpxnda.respawnobelisks.util;
 
 import com.redpxnda.respawnobelisks.registry.particle.RuneCircleParticle;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +22,7 @@ public class ClientUtils {
 
     public static boolean allowHardcoreRespawn = false;
 
+    public static Map<SpawnPoint, Block> cachedSpawnPointBlocks;
     public static Map<SpawnPoint, Item> cachedSpawnPointItems;
     public static long priorityChangerLookAwayTime;
     public static boolean hasLookedAwayFromPriorityChanger;

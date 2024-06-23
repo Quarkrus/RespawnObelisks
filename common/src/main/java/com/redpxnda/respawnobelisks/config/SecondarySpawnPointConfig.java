@@ -1,6 +1,7 @@
 package com.redpxnda.respawnobelisks.config;
 
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
+import com.redpxnda.nucleus.codec.tag.BlockList;
 import com.redpxnda.nucleus.codec.tag.TaggableBlock;
 import com.redpxnda.nucleus.util.Comment;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
@@ -53,6 +54,12 @@ public class SecondarySpawnPointConfig {
     @Comment("When players are allowed to choose to spawn at a secondary respawn point.\n" + spawnModeComment)
     public PointSpawnMode secondarySpawnMode = PointSpawnMode.NEVER;
 
+    @Comment("A list of block ids which players are not allowed to choose to respawn at, unless it is their main respawn point.")
+    public BlockList secondarySpawnBlockBlacklist = BlockList.of();
+
+    @Comment("Whether 'secondarySpawnBlockBlacklist' should act as a whitelist instead of a blacklist.")
+    public boolean secondarySpawnBlocksAsWhitelist = false;
+
     @Comment("When players are allowed to choose to respawn at world spawn.\n" + spawnModeComment)
     public PointSpawnMode worldSpawnMode = PointSpawnMode.NEVER;
 
@@ -70,6 +77,8 @@ public class SecondarySpawnPointConfig {
                 case IF_CHARGED -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity robe && robe.getCharge(player)-robe.getCost(player) >= 0;
                 case UNLESS_CHARGED_OBELISK -> point == null || !(player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity robe) || robe.getCharge(player)-robe.getCost(player) < 0;
                 case UNLESS_CHARGED -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity robe && robe.getCharge(player)-robe.getCost(player) < 0;
+                case IF_OBELISK -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity;
+                case UNLESS_OBELISK -> point == null || !(player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity);
                 case NEVER -> false;
                 default -> true;
             };

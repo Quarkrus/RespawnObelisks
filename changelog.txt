@@ -1,2 +1,3 @@
-# 2.5-c
-- added option to override secondary respawn points
+# 2.5-d
+- actually implemented IF_OBELISK and UNLESS_OBELISK spawn choice modes
+- added blacklist/whitelist for blocks which you can choose to respawn at

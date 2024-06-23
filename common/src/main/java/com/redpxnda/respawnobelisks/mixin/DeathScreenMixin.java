@@ -48,7 +48,10 @@ public abstract class DeathScreenMixin extends Screen {
             List<SpawnPoint> choices = new ArrayList<>();
             if (facet.canChooseRespawn) {
                 if (facet.canChooseWorldSpawn) choices.add(null);
-                choices.addAll(facet.points);
+                for (SpawnPoint point : facet.points) {
+                    if (ClientUtils.cachedSpawnPointBlocks.containsKey(point))
+                        choices.add(point);
+                }
             } else if (facet.canChooseWorldSpawn) {
                 choices.add(null);
                 choices.add(facet.getLatestPoint());

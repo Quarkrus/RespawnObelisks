@@ -66,7 +66,7 @@ public abstract class ServerPlayerMixin {
             } else pos = bp == null ? null : GlobalPos.create(player.getSpawnPointDimension(), bp);
         } else pos = bp == null ? null : GlobalPos.create(player.getSpawnPointDimension(), bp);
 
-        if (pos != null && player.getWorld().getBlockEntity(pos.getPos()) instanceof RespawnObeliskBlockEntity robe) {
+        if (pos != null && player.getServer().getWorld(pos.getDimension()).getBlockEntity(pos.getPos()) instanceof RespawnObeliskBlockEntity robe) {
             robe.respawningPlayers.remove(pos, player);
             robe.respawningPlayers.put(pos, player);
         }
