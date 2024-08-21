@@ -5,6 +5,7 @@ import com.redpxnda.respawnobelisks.forge.compat.CuriosCompat;
 import com.redpxnda.respawnobelisks.registry.ModRegistries;
 import com.redpxnda.respawnobelisks.registry.item.BoundCompassItem;
 import com.redpxnda.respawnobelisks.registry.particle.RuneCircleParticle;
+import com.redpxnda.respawnobelisks.util.CoreUtils;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.client.item.CompassAnglePredicateProvider;
@@ -40,6 +41,7 @@ public class RespawnObelisksForge {
                 event.enqueueWork(() -> {
                     ModelPredicateProviderRegistry.register(ModRegistries.boundCompass.get(), new Identifier("angle"), new CompassAnglePredicateProvider((level, stack, player) -> BoundCompassItem.hasLodestone(stack) ? BoundCompassItem.createLodestonePos(stack.getOrCreateNbt()) : null));
                     ModelPredicateProviderRegistry.register(ModRegistries.dormantObelisk.get(), new Identifier(MOD_ID, "dimension"), (stack, level, player, i) -> !stack.hasNbt() || !stack.getNbt().contains("Dimension") ? 0f : stack.getNbt().getFloat("Dimension"));
+                    ModelPredicateProviderRegistry.register(ModRegistries.dormantObelisk.get(), new Identifier(MOD_ID, "uncharged"), (stack, level, player, i) -> CoreUtils.getCharge(stack.getOrCreateNbt()) == 0 ? 1 : 0);
                 });
             }
 

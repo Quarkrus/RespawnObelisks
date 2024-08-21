@@ -6,10 +6,6 @@ import com.redpxnda.respawnobelisks.registry.ModRegistries;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.util.CoreUtils;
 import com.redpxnda.respawnobelisks.util.QuadConsumer;
-import org.apache.commons.lang3.function.TriFunction;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +14,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.function.TriFunction;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
 
 import static com.redpxnda.respawnobelisks.data.listener.ObeliskInteraction.*;
 
@@ -39,7 +39,7 @@ public class ObeliskCore {
             (player, stack, blockEntity) -> CoreUtils.getMaxCharge(stack.getOrCreateNbt()), // get max charge
             (amnt, player, stack, blockEntity) -> CoreUtils.setCharge(stack.getOrCreateNbt(), amnt), // set charge
             (amnt, player, stack, blockEntity) -> CoreUtils.setMaxCharge(stack.getOrCreateNbt(), amnt), // set max charge
-            List.of(DEFAULT_CHARGING, INFINITE_CHARGE, TELEPORT, REVIVE, PROTECT, SAVE_INV),
+            List.of(DEFAULT_CHARGING, INFINITE_CHARGE, TELEPORT, REVIVE, PROTECT, SAVE_INV, RADIANT_FLAME_FUELING),
             RespawnObeliskBlockEntity.defaultThemes,
             Text.literal("TEST"),
             Text.literal("give charge by TESTInG"),

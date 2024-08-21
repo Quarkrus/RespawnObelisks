@@ -39,4 +39,6 @@ public class RespawnObelisksConfig {
     public RespawnPerksConfig respawnPerks = new RespawnPerksConfig();
 
     public DimensionsConfig dimensions = new DimensionsConfig();
+
+    public RadiantFlameConfig radiantFlame = new RadiantFlameConfig();
 }

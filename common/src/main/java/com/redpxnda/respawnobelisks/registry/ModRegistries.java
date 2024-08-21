@@ -8,12 +8,15 @@ import com.redpxnda.respawnobelisks.data.recipe.CoreMergeRecipe;
 import com.redpxnda.respawnobelisks.data.recipe.CoreUpgradeRecipe;
 import com.redpxnda.respawnobelisks.mixin.CriteriasAccessor;
 import com.redpxnda.respawnobelisks.registry.block.FakeRespawnAnchorBlock;
+import com.redpxnda.respawnobelisks.registry.block.RadiantFlameBlock;
 import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
+import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.registry.effect.ImmortalityCurseEffect;
 import com.redpxnda.respawnobelisks.registry.enchantment.ObeliskboundEnchantment;
 import com.redpxnda.respawnobelisks.registry.item.BoundCompassItem;
 import com.redpxnda.respawnobelisks.registry.item.CoreItem;
+import com.redpxnda.respawnobelisks.registry.item.RadiantLanternItem;
 import com.redpxnda.respawnobelisks.registry.particle.RuneCircleType;
 import com.redpxnda.respawnobelisks.registry.structure.NetherLandStructures;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -169,8 +172,28 @@ public class ModRegistries {
             .dropsNothing()
     ));
 
+    public static RegistrySupplier<Block> radiantFlame = blocks.register(rl("radiant_flame"), () -> new RadiantFlameBlock(AbstractBlock.Settings
+            .create()
+            .sounds(BlockSoundGroup.INTENTIONALLY_EMPTY)
+            .noBlockBreakParticles()
+            .pistonBehavior(PistonBehavior.DESTROY)
+            .mapColor(MapColor.WHITE)
+            .nonOpaque()
+            //.luminance((state) -> 14)
+            .breakInstantly()
+            .noCollision()
+    ));
+
+    public static RegistrySupplier<Item> radiantLantern = regItem("radiant_lantern", () -> new RadiantLanternItem(radiantFlame.get(), new Item.Settings()
+            .rarity(Rarity.UNCOMMON)
+    ));
+
     public static RegistrySupplier<BlockEntityType<RespawnObeliskBlockEntity>> ROBE = blockEntities.register(rl("respawn_obelisk"), () ->
             BlockEntityType.Builder.create(RespawnObeliskBlockEntity::new, respawnObelisk.get(), netherRespawnObelisk.get(), endRespawnObelisk.get()).build(null)
+    );
+
+    public static RegistrySupplier<BlockEntityType<RadiantFlameBlockEntity>> radiantFlameBlockEntity = blockEntities.register(rl("radiant_flame"), () ->
+            BlockEntityType.Builder.create(RadiantFlameBlockEntity::new, radiantFlame.get()).build(null)
     );
 
     public static RegistrySupplier<StatusEffect> immortalityCurse = effects.register(rl("immortality_curse"), ImmortalityCurseEffect::new);

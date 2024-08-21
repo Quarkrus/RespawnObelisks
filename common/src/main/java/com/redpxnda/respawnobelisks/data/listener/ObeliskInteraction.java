@@ -3,7 +3,9 @@ package com.redpxnda.respawnobelisks.data.listener;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.redpxnda.respawnobelisks.config.RespawnObelisksConfig;
+import com.redpxnda.respawnobelisks.registry.ModRegistries;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
+import com.redpxnda.respawnobelisks.util.CoreUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -49,6 +51,22 @@ public class ObeliskInteraction {
     public static ObeliskInteraction REVIVE = new ObeliskInteraction(new Identifier(MOD_ID, "revival"));
     public static ObeliskInteraction PROTECT = new ObeliskInteraction(new Identifier(MOD_ID, "player_protection"));
     public static ObeliskInteraction SAVE_INV = new ObeliskInteraction(new Identifier(MOD_ID, "item_keeping"));
+    public static ObeliskInteraction RADIANT_FLAME_FUELING = ofClick(new Identifier(MOD_ID, "radiant_flame_fueling"), (player, stack, be) -> {
+        if (player == null || !stack.isOf(ModRegistries.radiantLantern.get()) || CoreUtils.getCharge(stack.getOrCreateNbt()) > 0) return false;
+        double charge = be.getCharge(player);
+        charge = Math.min(charge, RespawnObelisksConfig.INSTANCE.radiantFlame.maxLanternRadiance);
+        double reducedCharge = charge*RespawnObelisksConfig.INSTANCE.radiantFlame.radianceEfficiency;
+        if (reducedCharge < RespawnObelisksConfig.INSTANCE.radiance.respawnCost) return false; // must have charge for at least 1 respawn
+        be.chargeAndAnimate(player, -charge);
+
+        ItemStack copy = stack.copy(); // only charge 1 item
+        copy.setCount(1);
+        if (!player.getAbilities().creativeMode) stack.decrement(1);
+        CoreUtils.setCharge(copy.getOrCreateNbt(), reducedCharge);
+        player.getInventory().offerOrDrop(copy);
+
+        return true;
+    });
 
     public final Identifier id;
     public final BiFunction<RespawnObeliskBlockEntity, GameEvent.Message, Boolean> eventHandler;

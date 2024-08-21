@@ -37,13 +37,11 @@ import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import static com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock.WILD;
 import static com.redpxnda.respawnobelisks.registry.block.entity.theme.RenderTheme.*;
 
 public class RespawnObeliskBlockEntity extends BlockEntity implements GameEventListener {
-    protected final List<Consumer<NbtCompound>> loadConsumers = new ArrayList<>();
     public static final List<Identifier> defaultThemes = List.of(defCharge, defDep, defRunes);
     private static final Logger LOGGER = RespawnObelisks.getLogger();
     private static final Random random = new Random();
@@ -236,7 +234,6 @@ public class RespawnObeliskBlockEntity extends BlockEntity implements GameEventL
         this.hasTeleportingEntity = tag.getBoolean("HasTeleportingEntity");
         this.themes.clear();
         tag.getList("RenderThemes", 8).forEach(t -> this.themes.add(new Identifier(t.asString())));
-        loadConsumers.forEach(c -> c.accept(tag));
     }
 
     @Override
@@ -279,10 +276,10 @@ public class RespawnObeliskBlockEntity extends BlockEntity implements GameEventL
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    public static void tick(World level, BlockPos blockPos, BlockState state, RespawnObeliskBlockEntity blockEntity) {
+    public void tick(World level, BlockPos blockPos, BlockState state) {
         if (level.getTime() % 100 == 0) {
             if (!level.isClient) {
-                blockEntity.checkLimbo(true);
+                checkLimbo(true);
             }
         }
     }

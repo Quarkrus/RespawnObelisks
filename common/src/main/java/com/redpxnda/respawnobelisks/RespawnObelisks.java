@@ -17,6 +17,7 @@ import com.redpxnda.respawnobelisks.facet.kept.KeptRespawnItems;
 import com.redpxnda.respawnobelisks.network.ModPackets;
 import com.redpxnda.respawnobelisks.registry.ModRegistries;
 import com.redpxnda.respawnobelisks.registry.ModTags;
+import com.redpxnda.respawnobelisks.registry.block.RadiantFlameBlock;
 import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
 import com.redpxnda.respawnobelisks.registry.block.entity.theme.RenderTheme;
 import com.redpxnda.respawnobelisks.util.RespawnAvailability;
@@ -91,6 +92,9 @@ public class RespawnObelisks {
         LifecycleEvent.SETUP.register(() -> {
             RespawnAvailability.availabilityProviders.put(new TaggableBlock(ModTags.Blocks.RESPAWN_OBELISKS), (point, pos, state, world, player) -> {
                 return state.getBlock() instanceof RespawnObeliskBlock rob && rob.getRespawnLocation(false, false, false, state, pos, world, player).isPresent();
+            });
+            RespawnAvailability.availabilityProviders.put(new TaggableBlock(ModRegistries.radiantFlame.get()), (point, pos, state, world, player) -> {
+                return state.getBlock() instanceof RadiantFlameBlock rob && rob.getRespawnLocation(false, state, pos, world, player).isPresent();
             });
             RespawnAvailability.availabilityProviders.put(new TaggableBlock(BlockTags.BEDS), (point, pos, state, world, player) -> {
                 return state.getBlock() instanceof BedBlock && BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, state.get(BedBlock.FACING), point.angle()).isPresent();

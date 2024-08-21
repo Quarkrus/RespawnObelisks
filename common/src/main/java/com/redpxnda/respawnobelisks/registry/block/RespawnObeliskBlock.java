@@ -435,7 +435,7 @@ public class RespawnObeliskBlock extends Block implements BlockEntityProvider {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> type) {
         return type == ModRegistries.ROBE.get() ? (pLevel, pos, blockState, be) -> {
             if (be instanceof RespawnObeliskBlockEntity blockEntity)
-                RespawnObeliskBlockEntity.tick(pLevel, pos, blockState, blockEntity);
+                blockEntity.tick(pLevel, pos, blockState);
         } : null;
     }
 

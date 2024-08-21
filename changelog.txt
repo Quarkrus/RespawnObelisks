@@ -1,3 +1,2 @@
-# 2.5-d
-- actually implemented IF_OBELISK and UNLESS_OBELISK spawn choice modes
-- added blacklist/whitelist for blocks which you can choose to respawn at
+# 2.6-a
+- added "radiant lanterns"

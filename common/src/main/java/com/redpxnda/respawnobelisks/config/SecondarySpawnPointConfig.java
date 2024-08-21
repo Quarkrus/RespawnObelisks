@@ -4,6 +4,7 @@ import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.codec.tag.BlockList;
 import com.redpxnda.nucleus.codec.tag.TaggableBlock;
 import com.redpxnda.nucleus.util.Comment;
+import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.util.SpawnPoint;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -46,6 +47,8 @@ public class SecondarySpawnPointConfig {
             UNLESS_CHARGED_OBELISK: Players can only choose if their obelisk does not have charge, or if their respawn point isn't an obelisk.
             IF_OBELISK: Players can only choose if their respawn point is an obelisk.
             UNLESS_OBELISK: Players can only choose if their respawn point is not an obelisk.
+            IF_FLAME: Players can only choose if their respawn point is a radiant flame.
+            UNLESS_FLAME: Players can only choose if their respawn point is not a radiant flame.
             """;
 
     @Comment("Whether attempting to set your spawn point when you are unable to overrides an existing spawn point.")
@@ -70,7 +73,9 @@ public class SecondarySpawnPointConfig {
         UNLESS_CHARGED,
         UNLESS_CHARGED_OBELISK,
         IF_OBELISK,
-        UNLESS_OBELISK;
+        UNLESS_OBELISK,
+        IF_FLAME,
+        UNLESS_FLAME;
 
         public boolean evaluate(SpawnPoint point, ServerPlayerEntity player) {
             return switch (this) {
@@ -79,8 +84,10 @@ public class SecondarySpawnPointConfig {
                 case UNLESS_CHARGED -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity robe && robe.getCharge(player)-robe.getCost(player) < 0;
                 case IF_OBELISK -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity;
                 case UNLESS_OBELISK -> point == null || !(player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RespawnObeliskBlockEntity);
+                case IF_FLAME -> point != null && player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RadiantFlameBlockEntity;
+                case UNLESS_FLAME -> point == null || !(player.getServer().getWorld(point.dimension()).getBlockEntity(point.pos()) instanceof RadiantFlameBlockEntity);
                 case NEVER -> false;
-                default -> true;
+                case ALWAYS -> true;
             };
         }
     }

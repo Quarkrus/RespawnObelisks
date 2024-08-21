@@ -6,10 +6,13 @@ import com.redpxnda.respawnobelisks.facet.HardcoreRespawningTracker;
 import com.redpxnda.respawnobelisks.facet.SecondarySpawnPoints;
 import com.redpxnda.respawnobelisks.network.AllowHardcoreRespawnPacket;
 import com.redpxnda.respawnobelisks.network.ModPackets;
+import com.redpxnda.respawnobelisks.registry.block.RadiantFlameBlock;
 import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
+import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.util.SpawnPoint;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -66,9 +69,15 @@ public abstract class ServerPlayerMixin {
             } else pos = bp == null ? null : GlobalPos.create(player.getSpawnPointDimension(), bp);
         } else pos = bp == null ? null : GlobalPos.create(player.getSpawnPointDimension(), bp);
 
-        if (pos != null && player.getServer().getWorld(pos.getDimension()).getBlockEntity(pos.getPos()) instanceof RespawnObeliskBlockEntity robe) {
-            robe.respawningPlayers.remove(pos, player);
-            robe.respawningPlayers.put(pos, player);
+        if (pos != null) {
+            BlockEntity blockEntity = player.getServer().getWorld(pos.getDimension()).getBlockEntity(pos.getPos());
+            if (blockEntity instanceof RespawnObeliskBlockEntity robe) {
+                robe.respawningPlayers.remove(pos, player);
+                robe.respawningPlayers.put(pos, player);
+            } else if (blockEntity instanceof RadiantFlameBlockEntity flame) { // redundant idc i fix later
+                flame.respawningPlayers.remove(pos, player);
+                flame.respawningPlayers.put(pos, player);
+            }
         }
 
         if (override) cir.setReturnValue(pos == null ? null : pos.getPos());
@@ -136,7 +145,7 @@ public abstract class ServerPlayerMixin {
             ServerWorld world = player.getServer().getWorld(dim);
             if (world == null) return;
             BlockState state = world.getBlockState(pos);
-            boolean canRespawn = state.getBlock() instanceof RespawnObeliskBlock rob && rob.getRespawnLocation(false, false, false, state, pos, world, player).isPresent();
+            boolean canRespawn = (state.getBlock() instanceof RespawnObeliskBlock rob && rob.getRespawnLocation(false, false, false, state, pos, world, player).isPresent()) || (state.getBlock() instanceof RadiantFlameBlock flame && flame.getRespawnLocation(false, state, pos, world, player).isPresent());
             HardcoreRespawningTracker tracker = HardcoreRespawningTracker.KEY.get(player);
             if (tracker != null) tracker.canRespawn = canRespawn;
             ModPackets.CHANNEL.sendToPlayer(player, new AllowHardcoreRespawnPacket(canRespawn));

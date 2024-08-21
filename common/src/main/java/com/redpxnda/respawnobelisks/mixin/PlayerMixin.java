@@ -1,7 +1,9 @@
 package com.redpxnda.respawnobelisks.mixin;
 
 import com.google.common.collect.Iterables;
+import com.redpxnda.respawnobelisks.registry.block.RadiantFlameBlock;
 import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
+import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,6 +33,16 @@ public class PlayerMixin {
             if (state.getBlock() instanceof RespawnObeliskBlock rob) {
                 players.remove(player);
                 cir.setReturnValue(rob.getRespawnLocation(state, pos, world, player));
+            }
+        } else if (world.getBlockEntity(pos) instanceof RadiantFlameBlockEntity blockEntity) { // yeah yeah ik this is lazy ash but i do not give a shit
+            GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
+            Collection<ServerPlayerEntity> players = blockEntity.respawningPlayers.get(globalPos);
+            if (players.isEmpty()) return;
+            ServerPlayerEntity player = Iterables.get(players, 0);
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof RadiantFlameBlock b) {
+                players.remove(player);
+                cir.setReturnValue(b.getRespawnLocation(true, state, pos, world, player));
             }
         }
     }

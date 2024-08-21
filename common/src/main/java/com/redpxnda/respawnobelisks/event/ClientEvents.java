@@ -11,6 +11,7 @@ import com.redpxnda.respawnobelisks.network.ModPackets;
 import com.redpxnda.respawnobelisks.network.ScrollWheelPacket;
 import com.redpxnda.respawnobelisks.registry.ModRegistries;
 import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
+import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBER;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBER;
 import com.redpxnda.respawnobelisks.registry.particle.ChargeIndicatorParticle;
 import com.redpxnda.respawnobelisks.registry.particle.DepleteRingParticle;
@@ -131,6 +132,7 @@ public class ClientEvents {
 
     public static void onClientSetup(MinecraftClient mc) {
         BlockEntityRendererRegistry.register(ModRegistries.ROBE.get(), RespawnObeliskBER::new);
+        BlockEntityRendererRegistry.register(ModRegistries.radiantFlameBlockEntity.get(), RadiantFlameBER::new);
 //        if (Platform.isFabric()) // idk this is super goofy: libraries say the `register` method is public, I even AW'd it, but still I get errors :P
 //            ItemPropertiesAccessor.register(ModRegistries.BOUND_COMPASS.get(), new ResourceLocation("angle"), new CompassItemPropertyFunction((level, stack, player) -> BoundCompassItem.isLodestoneCompass(stack) ? BoundCompassItem.getLodestonePosition(stack.getOrCreateTag()) : null));
     }

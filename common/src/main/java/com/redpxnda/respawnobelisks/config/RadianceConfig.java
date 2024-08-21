@@ -59,7 +59,7 @@ public class RadianceConfig {
             If the curse is enabled, this does nothing.
             This determines whether the player can respawn at an obelisk that has less charge than the cost to respawn.
             For example, if this is true, a player can still respawn at an obelisk with 1 charge, even though the cost of respawning is 20(by default)."""
-    )*/ //todo implement? issue was with saving items....
+    )*/ //todo implement? issue was with saving items.... (note potential >= bug)
     @AutoCodec.Ignored
     public boolean forgivingRespawn = true;
 }
