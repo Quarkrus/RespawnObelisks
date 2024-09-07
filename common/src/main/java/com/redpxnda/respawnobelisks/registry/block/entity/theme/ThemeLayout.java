@@ -1,8 +1,9 @@
 package com.redpxnda.respawnobelisks.registry.block.entity.theme;
 
+import net.minecraft.util.Identifier;
+
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.util.Identifier;
 
 public class ThemeLayout {
     private final Map<Identifier, ThemeData> data = new HashMap<>();
@@ -21,14 +22,6 @@ public class ThemeLayout {
         }
         return dat;
     }
-    public ThemeData getOrCreate(Identifier loc) {
-        ThemeData dat = data.get(loc);
-        if (dat == null) {
-            dat = new ThemeData();
-            data.put(loc, dat);
-        }
-        return dat;
-    }
 
     public static class ThemeData extends HashMap<String, Object> {
         public ThemeData() {}
@@ -40,6 +33,10 @@ public class ThemeLayout {
                 return defaultValue;
             }
             return (T) val;
+        }
+
+        public Integer getInt(String key, Integer def) {
+            return get(key, Integer.class, def, true);
         }
 
         public Long getLong(String key, Long def) {

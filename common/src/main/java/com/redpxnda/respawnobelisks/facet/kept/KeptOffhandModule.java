@@ -24,7 +24,7 @@ public class KeptOffhandModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         if (item.isEmpty()) return;
 
         if (player.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty()) player.equipStack(EquipmentSlot.OFFHAND, item);

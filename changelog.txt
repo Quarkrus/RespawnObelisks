@@ -1,2 +1,5 @@
 # 2.6-a
 - added "radiant lanterns"
+- added supporter cosmetic
+- fixed curios
+- fixed stack compass bug

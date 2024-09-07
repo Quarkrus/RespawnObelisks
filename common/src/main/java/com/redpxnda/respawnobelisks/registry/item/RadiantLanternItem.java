@@ -24,10 +24,12 @@ public class RadiantLanternItem extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> lines, TooltipContext tooltipFlag) {
+        double charge = CoreUtils.getCharge(stack.getOrCreateNbt());
         lines.add(1,
                 Text.translatable("text.respawnobelisks.tooltip.charge").formatted(Formatting.GRAY)
-                        .append(Text.literal(" " + CoreUtils.getCharge(stack.getOrCreateNbt())).formatted(Formatting.WHITE))
+                        .append(Text.literal(" " + charge).formatted(Formatting.WHITE))
         );
+        lines.add(1, Text.translatable("text.respawnobelisks.tooltip.radiant_lantern." + (charge > 0 ? "full" : "empty")).formatted(Formatting.GRAY));
     }
 
     @Override

@@ -58,7 +58,7 @@ public class RespawnObeliskBlockEntity extends BlockEntity implements GameEventL
     private String obeliskName = "";
     private Text obeliskNameComponent = null;
     public boolean hasTeleportingEntity = false;
-    private final List<Identifier> themes = new ArrayList<>();
+    public final List<Identifier> themes = new ArrayList<>();
     public final Multimap<GlobalPos, ServerPlayerEntity> respawningPlayers = Multimaps.newMultimap(new ConcurrentHashMap<>(), HashSet::new);
 
     public RespawnObeliskBlockEntity(BlockPos pos, BlockState blockState) {
@@ -93,7 +93,7 @@ public class RespawnObeliskBlockEntity extends BlockEntity implements GameEventL
         }
         return true;
     }
-    public List<Identifier> getThemes() {
+    public List<Identifier> getThemesOrDefault() {
         if (coreItem.isEmpty()) return List.of();
         if (themes.isEmpty()) return coreItem.core().themes();
         return themes;

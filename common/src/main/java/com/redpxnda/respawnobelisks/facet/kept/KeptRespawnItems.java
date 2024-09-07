@@ -36,8 +36,8 @@ public class KeptRespawnItems implements EntityFacet<NbtCompound> {
         });
     }
 
-    public void restore(ServerPlayerEntity player) {
-        modules.forEach((key, module) -> module.restore(player));
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer) {
+        modules.forEach((key, module) -> module.restore(oldPlayer, newPlayer));
     }
 
     public void scatter(double x, double y, double z, ServerPlayerEntity player) {

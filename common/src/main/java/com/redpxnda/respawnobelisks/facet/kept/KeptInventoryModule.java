@@ -33,7 +33,7 @@ public class KeptInventoryModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         items.forEach(i -> {
             if (!i.isEmpty()) player.getInventory().offerOrDrop(i);
         });

@@ -16,7 +16,7 @@ import static com.redpxnda.nucleus.client.Rendering.*;
 public class RespawnObeliskBER implements BlockEntityRenderer<RespawnObeliskBlockEntity> {
 
     public static final Identifier RUNES = new Identifier(MOD_ID, "block/runes");
-    public static Sprite SPRITE = null;
+    public static Sprite RUNE_SPRITE = null;
     private final BlockEntityRendererFactory.Context context;
 
     public RespawnObeliskBER(BlockEntityRendererFactory.Context context) {
@@ -26,7 +26,7 @@ public class RespawnObeliskBER implements BlockEntityRenderer<RespawnObeliskBloc
     @Override
     public void render(RespawnObeliskBlockEntity blockEntity, float partialTick, MatrixStack poseStack, VertexConsumerProvider bufferSource, int packedLight, int packedOverlay) {
         if (blockEntity.themeLayout == null) blockEntity.themeLayout = new ThemeLayout();
-        blockEntity.getThemes().forEach(rl -> {
+        blockEntity.getThemesOrDefault().forEach(rl -> {
             RenderTheme theme = RenderTheme.themes.get(rl);
             if (theme != null)
                 theme.render(blockEntity, partialTick, poseStack, bufferSource, packedLight, packedOverlay);

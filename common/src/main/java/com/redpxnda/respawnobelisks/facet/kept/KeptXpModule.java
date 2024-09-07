@@ -23,7 +23,7 @@ public class KeptXpModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         if (xp == 0) return;
         player.addExperience(xp);
         xp = 0;

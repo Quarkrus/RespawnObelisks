@@ -54,11 +54,11 @@ public class ObeliskUtils {
                 shouldEnchantmentApply(stack, MathUtil.random);
     }
 
-    public static void restoreSavedItems(ServerPlayerEntity player) {
+    public static void restoreSavedItems(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         KeptRespawnItems items = KeptRespawnItems.KEY.get(player);
         if (items == null) return;
         if (!items.isEmpty()) ModRegistries.keepItemsCriterion.trigger(player);
-        items.restore(player);
+        items.restore(oldPlayer, player);
     }
 
     public static void scatterSavedItems(ServerPlayerEntity player) {

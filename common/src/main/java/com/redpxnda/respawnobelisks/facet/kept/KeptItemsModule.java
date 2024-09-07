@@ -31,7 +31,12 @@ public interface KeptItemsModule {
 
     NbtElement toNbt();
     void fromNbt(NbtElement element);
-    void restore(ServerPlayerEntity player);
+
+    /**
+     * @param oldPlayer the dead player object from before death (same as newPlayer if in rune circle teleport or obelisk interaction)
+     * @param newPlayer the alive, replacement player object after death
+     */
+    void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity newPlayer);
     void gather(ServerPlayerEntity player);
     void scatter(double x, double y, double z, ServerPlayerEntity player);
     boolean isEmpty();

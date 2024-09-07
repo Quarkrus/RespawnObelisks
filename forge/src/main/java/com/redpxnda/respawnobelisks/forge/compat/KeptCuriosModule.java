@@ -46,7 +46,7 @@ public class KeptCuriosModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> {
             handler.getCurios().forEach((slot, data) -> {
                 List<ItemStack> storedSlots = curiosInventory.get(slot);
@@ -59,10 +59,10 @@ public class KeptCuriosModule implements KeptItemsModule {
                     ItemStack stack = storedSlots.get(i);
                     if (stack.isEmpty()) continue;
 
-                    ItemStack prev = inv.getStackInSlot(i);
+                    //ItemStack prev = inv.getStackInSlot(i);
 
-                    if (!prev.isEmpty()) player.getInventory().offerOrDrop(stack);
-                    else inv.setStackInSlot(i, stack.copy());
+                    /*if (!prev.isEmpty()) */player.getInventory().offerOrDrop(stack); // curios is fucking weird and drops all the changes i make, i just give it to player instead
+                    // else inv.setStackInSlot(i, stack.copy());
                 }
             });
         });
@@ -71,7 +71,7 @@ public class KeptCuriosModule implements KeptItemsModule {
 
     @Override
     public void gather(ServerPlayerEntity player) {
-        if (!curiosInventory.isEmpty()) return;
+        if (!isEmpty()) return;
         CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> {
             handler.getCurios().forEach((slot, data) -> {
                 List<ItemStack> storedItems = new ArrayList<>();
@@ -79,7 +79,7 @@ public class KeptCuriosModule implements KeptItemsModule {
 
                 for (int i = 0; i < inv.getSlots(); i++) {
                     ItemStack stack = inv.getStackInSlot(i);
-                    if (!ObeliskUtils.shouldSaveItem(RespawnObelisksConfig.INSTANCE.respawnPerks.armor.keepArmor, RespawnObelisksConfig.INSTANCE.respawnPerks.armor.keepArmorChance, stack))
+                    if (!ObeliskUtils.shouldSaveItem(RespawnObelisksConfig.INSTANCE.respawnPerks.trinkets.keepTrinkets, RespawnObelisksConfig.INSTANCE.respawnPerks.trinkets.keepTrinketsChance, stack))
                         stack = ItemStack.EMPTY;
                     storedItems.add(stack);
                     if (!stack.isEmpty()) inv.setStackInSlot(i, ItemStack.EMPTY);

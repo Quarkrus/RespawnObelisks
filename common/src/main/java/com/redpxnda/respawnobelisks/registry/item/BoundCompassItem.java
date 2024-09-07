@@ -20,7 +20,6 @@ import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
@@ -59,7 +58,7 @@ public class BoundCompassItem extends CompassItem {
         if (RespawnObelisksConfig.INSTANCE.teleportation.allowedBindingBlocks.contains(level.getBlockState(blockPos))) {
             level.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
             ItemStack itemStack = useOnContext.getStack();
-            if (!player.getAbilities().creativeMode && itemStack.getCount() == 1) {
+            if (/*!player.getAbilities().creativeMode && */itemStack.getCount() == 1) {
                 this.writeNbt(level.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
             } else {
                 ItemStack itemStack2 = new ItemStack(ModRegistries.boundCompass.get(), 1);
@@ -148,9 +147,9 @@ public class BoundCompassItem extends CompassItem {
         return hasLodestone(itemStack) ? "item.respawnobelisks.bound_bound_compass" : super.getTranslationKey(itemStack);
     }
 
-    private void writeNbt(RegistryKey<World> resourceKey, BlockPos blockPos, NbtCompound compoundTag) {
+    public static void writeNbt(RegistryKey<World> resourceKey, BlockPos blockPos, NbtCompound compoundTag) {
         compoundTag.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(blockPos));
-        World.CODEC.encodeStart(NbtOps.INSTANCE, resourceKey).resultOrPartial(LOGGER::error).ifPresent(tag -> compoundTag.put(LODESTONE_DIMENSION_KEY, (NbtElement)tag));
+        World.CODEC.encodeStart(NbtOps.INSTANCE, resourceKey).resultOrPartial(LOGGER::error).ifPresent(tag -> compoundTag.put(LODESTONE_DIMENSION_KEY, tag));
         compoundTag.putBoolean(LODESTONE_TRACKED_KEY, true);
     }
 

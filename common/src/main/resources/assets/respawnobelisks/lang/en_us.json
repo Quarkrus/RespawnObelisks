@@ -53,6 +53,8 @@
   "text.respawnobelisks.tooltip.trusted_players": "Trusted Players:",
   "text.respawnobelisks.tooltip.charge": "Radiance:",
   "text.respawnobelisks.tooltip.max_charge": "Max Radiance:",
+  "text.respawnobelisks.tooltip.radiant_lantern.empty": "An ancient force might be able to ignite this lantern...",
+  "text.respawnobelisks.tooltip.radiant_lantern.full": "Perhaps this lantern's flame could stand on its own...",
   "text.respawnobelisks.jei.interaction_title": "Obelisk Charging",
   "text.respawnobelisks.jei.charge_text": "Radiance",
   "text.respawnobelisks.jei.core_info": "Place inside of a respawn obelisk in order to activate it.",

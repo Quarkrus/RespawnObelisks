@@ -1,5 +1,6 @@
 package com.redpxnda.respawnobelisks.registry.block;
 
+import com.redpxnda.nucleus.util.MiscUtil;
 import com.redpxnda.respawnobelisks.config.RespawnObelisksConfig;
 import com.redpxnda.respawnobelisks.data.listener.ObeliskCore;
 import com.redpxnda.respawnobelisks.data.listener.ObeliskInteraction;
@@ -58,14 +59,17 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.redpxnda.respawnobelisks.registry.ModRegistries.immortalityCurse;
+import static com.redpxnda.respawnobelisks.registry.ModRegistries.rl;
 import static com.redpxnda.respawnobelisks.util.ObeliskUtils.getAABB;
 
 public class RespawnObeliskBlock extends Block implements BlockEntityProvider {
+    public static final Map<UUID, List<Identifier>> PLACEMENT_THEMES = MiscUtil.initialize(new HashMap<>(), m -> {
+        m.put(UUID.fromString("4892cb61-5448-4b4f-890a-79f9b6172add"), List.of(rl("angel"), rl("default_runes"), rl("blue_spiral")));
+    });
     public static final Function<RespawnObeliskBlockEntity, DispenserBehavior> DISPENSER_BEHAVIOR = (robe) -> (pointer, stack) -> {
         clickInteractions(null, robe, stack);
         return stack;
@@ -125,6 +129,10 @@ public class RespawnObeliskBlock extends Block implements BlockEntityProvider {
     }
     public void onPlaced(World pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
         pLevel.setBlockState(pPos.up(), pState.with(HALF, DoubleBlockHalf.UPPER), 3);
+        if (pPlacer instanceof PlayerEntity player && !player.isSneaking() && PLACEMENT_THEMES.containsKey(player.getUuid()) && pLevel.getBlockEntity(pPos) instanceof RespawnObeliskBlockEntity robe) {
+            robe.themes.clear();
+            robe.themes.addAll(PLACEMENT_THEMES.getOrDefault(player.getUuid(), List.of()));
+        }
     }
 
     protected void appendProperties(StateManager.Builder<Block, BlockState> pBuilder) {
@@ -297,7 +305,7 @@ public class RespawnObeliskBlock extends Block implements BlockEntityProvider {
         KeptRespawnItems items = KeptRespawnItems.KEY.get(player);
         if (items != null && !items.isEmpty() && blockEntity.getCharge(player)-RespawnObelisksConfig.INSTANCE.radiance.respawnCost >= 0) {
             blockEntity.chargeAndAnimate(player, -RespawnObelisksConfig.INSTANCE.radiance.respawnCost);
-            items.restore(player);
+            items.restore(player, player);
             return true;
         }
         return false;

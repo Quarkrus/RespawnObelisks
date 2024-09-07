@@ -72,7 +72,12 @@ public class CommonEvents {
         }
 
         if (!hand.equals(Hand.MAIN_HAND) || !player.getMainHandStack().isOf(Items.RECOVERY_COMPASS) || !RespawnObelisksConfig.INSTANCE.teleportation.allowedBindingBlocks.contains(player.getWorld().getBlockState(pos))) return EventResult.pass();
-        if (RespawnObelisksConfig.INSTANCE.teleportation.enableTeleportation) player.setStackInHand(hand, new ItemStack(ModRegistries.boundCompass.get()));
+        if (RespawnObelisksConfig.INSTANCE.teleportation.enableTeleportation) {
+            ItemStack stack = player.getStackInHand(hand);
+            player.setStackInHand(hand, new ItemStack(ModRegistries.boundCompass.get()));
+            if (!player.getAbilities().creativeMode) stack.decrement(1);
+            player.getInventory().offerOrDrop(stack);
+        }
         BlockHitResult hitResult = new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), face, pos, false);
         if (player.getStackInHand(hand).getItem() instanceof BoundCompassItem item) item.useOnBlock(new ItemUsageContext(player, hand, hitResult));
         return EventResult.pass();
@@ -194,7 +199,7 @@ public class CommonEvents {
             oldPlayer.getSpawnPointPosition() != null &&
             oldPlayer.getWorld().getBlockEntity(oldPlayer.getSpawnPointPosition()) instanceof RespawnObeliskBlockEntity
         ) {
-            ObeliskUtils.restoreSavedItems(newPlayer);
+            ObeliskUtils.restoreSavedItems(oldPlayer, newPlayer);
         }// else ObeliskUtils.scatterSavedItems(oldPlayer);
     }
 

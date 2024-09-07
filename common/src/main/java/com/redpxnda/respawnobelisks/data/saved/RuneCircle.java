@@ -160,7 +160,7 @@ public class RuneCircle {
             player.setExperiencePoints(0);
         }
         player.requestTeleport(target.getX()+0.5, target.getY(), target.getZ()+0.5);
-        ObeliskUtils.restoreSavedItems(player);
+        ObeliskUtils.restoreSavedItems(player, player);
         block.getRespawnLocation(true, true, RespawnObelisksConfig.INSTANCE.teleportation.forcedCurseOnTp, blockEntity.getCachedState(), pos, level, player);
         blockEntity.hasTeleportingEntity = false;
         blockEntity.syncWithClient();

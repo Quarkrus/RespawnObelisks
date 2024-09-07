@@ -54,7 +54,7 @@ public class KeptTrinketsModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         TrinketsApi.getTrinketComponent(player).ifPresent(component -> {
             component.getInventory().forEach((group, slots) -> {
                 Map<String, List<ItemStack>> storedGroup = trinketInventory.get(group);

@@ -4,14 +4,14 @@ import com.redpxnda.nucleus.client.Rendering;
 import com.redpxnda.nucleus.math.ParticleShaper;
 import com.redpxnda.respawnobelisks.config.RespawnObelisksConfig;
 import com.redpxnda.respawnobelisks.registry.ModRegistries;
+import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.theme.ThemeLayout.ThemeData;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
@@ -19,16 +19,19 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static com.redpxnda.nucleus.client.Rendering.addVertex;
 import static com.redpxnda.nucleus.client.Rendering.lerpColors;
 import static com.redpxnda.respawnobelisks.registry.ModRegistries.rl;
 import static com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBER.RUNES;
-import static com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBER.SPRITE;
+import static com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBER.RUNE_SPRITE;
 import static com.redpxnda.respawnobelisks.util.RenderUtils.*;
 
 @FunctionalInterface
@@ -41,6 +44,8 @@ public interface RenderTheme {
     Identifier defRunes = rl("default_runes");
     Identifier sculk = rl("sculk");
     Identifier blazing = rl("blazing");
+    Identifier angel = rl("angel");
+    Identifier blueSpiral = rl("blue_spiral");
 
     static void init() {
         register(defCharge, (be, pt, ps, bs, pl, po) -> {
@@ -78,7 +83,7 @@ public interface RenderTheme {
         register(defDep, new BasicDepleteAnimation(defDep, "time", be -> {
             World level = be.getWorld();
             BlockPos pos = be.getPos();
-            assert level != null : " Level is somehow null in BasicDepleteAnimation";
+            assert level != null : "Level is somehow null in BasicDepleteAnimation";
             level.playSound(
                     pos.getX(), pos.getY(), pos.getZ(),
                     Registries.SOUND_EVENT.getOrEmpty(new Identifier(RespawnObelisksConfig.INSTANCE.radiance.depletingSound)).orElse(SoundEvents.UI_BUTTON_CLICK.value()), SoundCategory.BLOCKS,
@@ -87,8 +92,8 @@ public interface RenderTheme {
             level.addParticle(ModRegistries.depleteRingParticle.get(), pos.getX()+0.5, pos.getY()+1.05, pos.getZ()+0.5, 0, 0, 0);
         }));
         register(defRunes, (be, pt, ps, bs, pl, po) -> {
-            if (SPRITE == null) SPRITE = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(RUNES);
-            renderRunes(SPRITE, be, pt, ps, bs, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            if (RUNE_SPRITE == null) RUNE_SPRITE = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(RUNES);
+            renderRunes(RUNE_SPRITE, be, pt, ps, bs, LightmapTextureManager.MAX_LIGHT_COORDINATE);
         });
         register(sculk, (be, pt, ps, bs, pl, po) -> {
             World level = be.getWorld();
@@ -173,12 +178,86 @@ public interface RenderTheme {
             assert level != null;
 
             renderBlaze(be, pt, ps, bs);
-            if (SPRITE == null) SPRITE = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(RUNES);
-            renderRunes(RenderLayer.getTranslucent(), SPRITE, lerpColors(level.getTime(), 100, new float[][] {
+            if (RUNE_SPRITE == null) RUNE_SPRITE = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(RUNES);
+            renderRunes(RenderLayer.getTranslucent(), RUNE_SPRITE, lerpColors(level.getTime(), 100, new float[][] {
                     { 255, 50, 0 },
                     { 255, 175, 0 }
             }), be, pt, ps, bs, pl);
         }));
+        register(angel, (be, pt, ps, bs, pl, po) -> {
+            if (angelSprite == null) angelSprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(rl("block/wings"));
+            VertexConsumer vc = bs.getBuffer(RenderLayer.getCutout());
+            ps.push();
+            ps.translate(0.5f, 0.5f + (1 - Math.sin(Rendering.getGameAndPartialTime()/16))/16, 0.5f);
+
+            int direction = 0;
+            switch (be.getCachedState().get(RespawnObeliskBlock.RESPAWN_SIDE)) {
+                case EAST -> direction = 1;
+                case SOUTH -> direction = 2;
+                case WEST -> direction = 3;
+            }
+            ps.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90*direction)); // rotating by spawn direction
+
+            ps.push();
+            ps.translate(0.4, 0, 0);
+            ps.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((float) (Math.sin(Rendering.getGameAndPartialTime()/16)*30)));
+
+            // first side
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 17/16f, 0, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 17/16f, 23/16f, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE); // since image is 32x32, 6.5 = pixel 13 (x2)
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 23/16f, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 0, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+            // second side
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 17/16f, 23/16f, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 17/16f, 0, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 0, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 23/16f, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            ps.pop();
+
+            ps.push();
+            ps.translate(-0.4f, 0, 0); // other wing
+            ps.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) (Math.sin(Rendering.getGameAndPartialTime()/16)*30)));
+
+            // first side
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, -17/16f, 23/16f, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, -17/16f, 0, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 0, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 23/16f, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+            // second side
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, -17/16f, 0, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, -17/16f, 23/16f, 0, angelSprite.getFrameU(3.5), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE); // since image is 32x32, 6.5 = pixel 13 (x2)
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 23/16f, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(2.5), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            addVertex(ps, vc, 1f, 1f, 1f, 1f, 0, 0, 0, angelSprite.getFrameU(12), angelSprite.getFrameV(14), LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            ps.pop();
+
+            ps.pop();
+        });
+        register(blueSpiral, (be, pt, ps, bs, pl, po) -> {
+            World level = be.getWorld();
+            if (level == null) return;
+            BlockPos pos = be.getPos();
+            ThemeData data = be.themeLayout.get(blueSpiral);
+
+            tickLoopedExecution(be, data, "tick", x -> {
+                int animationPosition = data.getInt("animationPosition", 0);
+                if (animationPosition < 900) {
+                    if (rdm.nextBoolean()) {
+                        level.playSound(
+                                pos.getX(), pos.getY(), pos.getZ(),
+                                SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS,
+                                2, 1, false
+                        );
+                    }
+                    double radians = animationPosition * Math.PI / 180;
+                    level.addParticle(new DustParticleEffect(Vec3d.unpackRgb(0x00c8ff).toVector3f(), 1f), pos.getX() + Math.sin(radians) * 0.75 + 0.5, pos.getY() + animationPosition / 360f, pos.getZ() + Math.cos(radians) * 0.75 + 0.5, Math.sin(radians) / 20, 0, Math.cos(radians) / 20);
+                    animationPosition+=20;
+                    data.put("animationPosition", animationPosition);
+                }
+            });
+            timedExecution(be, data, be.getLastCharge(), "charging", x -> data.put("animationPosition", 0));
+        });
     }
 
     static void register(Identifier name, RenderTheme theme) {

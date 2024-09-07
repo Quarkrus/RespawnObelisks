@@ -37,6 +37,7 @@ public class RenderUtils {
     private static BlazeEntity blaze = null;
     private static Sprite sculkSprite;
     private static Sprite sculkTendrilsSprite;
+    public static Sprite angelSprite;
 
     public static final Vector3f[] runeCircleColors = {
             new Vector3f(19/255f, 142/255f, 153/255f),

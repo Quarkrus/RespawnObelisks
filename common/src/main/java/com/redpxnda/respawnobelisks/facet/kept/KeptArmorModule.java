@@ -34,7 +34,7 @@ public class KeptArmorModule implements KeptItemsModule {
     }
 
     @Override
-    public void restore(ServerPlayerEntity player) {
+    public void restore(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (slot.getType().equals(EquipmentSlot.Type.ARMOR)) {
                 if (items.size() <= slot.getEntitySlotId()) continue;
