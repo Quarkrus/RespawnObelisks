@@ -22,4 +22,7 @@ public class RadiantFlameConfig {
 
     @Comment("Whether radiant flames are bound to the player that placed them.")
     public boolean playerBound = true;
+
+    @Comment("Whether radiant lanterns can be reused.")
+    public boolean allowMultipleUses = false;
 }

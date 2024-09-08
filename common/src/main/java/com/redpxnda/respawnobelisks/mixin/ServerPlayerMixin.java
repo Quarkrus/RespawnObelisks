@@ -2,6 +2,7 @@ package com.redpxnda.respawnobelisks.mixin;
 
 import com.redpxnda.respawnobelisks.config.RespawnObelisksConfig;
 import com.redpxnda.respawnobelisks.config.SecondarySpawnPointConfig;
+import com.redpxnda.respawnobelisks.facet.FailedSpawnBlocks;
 import com.redpxnda.respawnobelisks.facet.HardcoreRespawningTracker;
 import com.redpxnda.respawnobelisks.facet.SecondarySpawnPoints;
 import com.redpxnda.respawnobelisks.network.AllowHardcoreRespawnPacket;
@@ -11,6 +12,7 @@ import com.redpxnda.respawnobelisks.registry.block.RespawnObeliskBlock;
 import com.redpxnda.respawnobelisks.registry.block.entity.RadiantFlameBlockEntity;
 import com.redpxnda.respawnobelisks.registry.block.entity.RespawnObeliskBlockEntity;
 import com.redpxnda.respawnobelisks.util.SpawnPoint;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -85,17 +87,23 @@ public abstract class ServerPlayerMixin {
 
     @Inject(method = "setSpawnPoint", at = @At("HEAD"), cancellable = true)
     private void RESPAWNOBELISKS_overrideSpawnSetting(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean sendMessage, CallbackInfo ci) {
+        ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
         if (!forced && pos != null) {
             World world = getServerWorld().getServer().getWorld(dimension);
-            if (world != null && RespawnObelisksConfig.INSTANCE.behaviorOverrides.isBlockBanned(world.getBlockState(pos))) {
-                sendMessage(Text.translatable("text.respawnobelisks.cannot_set_spawn").setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("text.respawnobelisks.cannot_set_spawn.hover")))));
+            BlockState state = world == null ? null : world.getBlockState(pos);
+            if (world != null && RespawnObelisksConfig.INSTANCE.behaviorOverrides.isBlockBanned(state)) {
+                FailedSpawnBlocks facet = FailedSpawnBlocks.KEY.get(player);
+                Block block = state.getBlock();
+                if (facet != null && !facet.blocks.contains(block)) {
+                    facet.blocks.add(block);
+                    sendMessage(Text.translatable("text.respawnobelisks.cannot_set_spawn").setStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("text.respawnobelisks.cannot_set_spawn.hover")))));
+                }
                 ci.cancel();
                 return;
             }
         }
 
         if (RespawnObelisksConfig.INSTANCE.secondarySpawnPoints.enableSecondarySpawnPoints) {
-            ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
             SecondarySpawnPoints facet = SecondarySpawnPoints.KEY.get(player);
             if (facet == null) return;
             SpawnPoint point = new SpawnPoint(dimension, pos, angle, forced);

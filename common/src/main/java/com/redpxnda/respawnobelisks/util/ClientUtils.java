@@ -12,13 +12,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ClientUtils {
     public static final Map<List<Double>, RuneCircleParticle> activeRuneParticles = new HashMap<>();
     private static final Map<String, Integer> genericTracker = new HashMap<>();
+
+    public static Set<String> attemptedSpawnBlockKeys = new HashSet<>(); // a set containing the blocks a player has attempted to set their spawn at(but couldnt)
 
     public static boolean allowHardcoreRespawn = false;
 

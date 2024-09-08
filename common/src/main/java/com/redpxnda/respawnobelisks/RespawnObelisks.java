@@ -10,6 +10,7 @@ import com.redpxnda.respawnobelisks.config.RespawnObelisksConfig;
 import com.redpxnda.respawnobelisks.data.listener.RevivedNbtEditing;
 import com.redpxnda.respawnobelisks.event.ClientEvents;
 import com.redpxnda.respawnobelisks.event.CommonEvents;
+import com.redpxnda.respawnobelisks.facet.FailedSpawnBlocks;
 import com.redpxnda.respawnobelisks.facet.HardcoreRespawningTracker;
 import com.redpxnda.respawnobelisks.facet.SecondarySpawnPoints;
 import com.redpxnda.respawnobelisks.facet.kept.KeptItemsModule;
@@ -62,8 +63,10 @@ public class RespawnObelisks {
         SecondarySpawnPoints.KEY = FacetRegistry.register(new Identifier(MOD_ID, "spawn_points"), SecondarySpawnPoints.class);
         HardcoreRespawningTracker.KEY = FacetRegistry.register(new Identifier(MOD_ID, "hardcore_respawning"), HardcoreRespawningTracker.class);
         KeptRespawnItems.KEY = FacetRegistry.register(new Identifier(MOD_ID, "kept_items"), KeptRespawnItems.class);
+        FailedSpawnBlocks.KEY = FacetRegistry.register(new Identifier(MOD_ID, "failed_spawn_blocks"), FailedSpawnBlocks.class);
         FacetRegistry.ENTITY_FACET_ATTACHMENT.register((entity, attacher) -> {
             if (entity instanceof ServerPlayerEntity sp) {
+                attacher.add(FailedSpawnBlocks.KEY, new FailedSpawnBlocks());
                 if (RespawnObelisksConfig.INSTANCE.allowHardcoreRespawning)
                     attacher.add(HardcoreRespawningTracker.KEY, new HardcoreRespawningTracker());
                 attacher.add(KeptRespawnItems.KEY, new KeptRespawnItems(sp));

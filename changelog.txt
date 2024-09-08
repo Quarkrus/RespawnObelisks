@@ -1,5 +1,3 @@
-# 2.6-a
-- added "radiant lanterns"
-- added supporter cosmetic
-- fixed curios
-- fixed stack compass bug
+# 2.6-b
+- added option for radiant lanterns to be reused
+- fixed cannot set spawn at this block message repeating

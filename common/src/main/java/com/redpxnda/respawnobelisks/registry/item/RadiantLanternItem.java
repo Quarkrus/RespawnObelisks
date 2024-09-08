@@ -10,6 +10,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -35,6 +36,25 @@ public class RadiantLanternItem extends BlockItem {
     @Override
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
         return CoreUtils.getCharge(context.getStack().getOrCreateNbt()) > 0 && super.canPlace(context, state);
+    }
+
+    @Override
+    public ActionResult place(ItemPlacementContext context) {
+        ItemStack stack = context.getStack();
+        int prevCount = stack.getCount();
+
+        ActionResult result = super.place(context);
+        int postCount = stack.getCount();
+
+        if (context.getPlayer() != null && RespawnObelisksConfig.INSTANCE.radiantFlame.allowMultipleUses && prevCount > postCount) {
+            stack.setCount(1);
+            ItemStack newStack = stack.copy(); // prevent item from being lost
+            stack.setCount(postCount);
+            CoreUtils.setCharge(newStack.getOrCreateNbt(), 0);
+            context.getPlayer().getInventory().offerOrDrop(newStack);
+        }
+
+        return result;
     }
 
     @Override
